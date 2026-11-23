@@ -1,3 +1,13 @@
-from function.agent import embedding, parent_split_embedding
+from fastapi import FastAPI
+from pydantic import BaseModel
+from .services.agent import invoke_AI
 
-print(parent_split_embedding("4.Agentic AI, Multi-Agent Workflows & Chuẩn MCP:Tuần 11 - 14 | Điểm cộng tạo khác biệt lớn cho CV năm 2026.Các JD hiện đại đã chuyển dịch từ Chatbot hỏi đáp đơn thuần sang AI Agents có khả năng lập kế hoạch, tự gọi công cụ, phối hợp đa tác tử và giao tiếp qua Model Context Protocol (MCP).Kiến thức cần học & luyện tập:Kiến trúc tác tử: Vòng lặp suy luận và hành động ReAct, lập kế hoạch (Plan-and-Execute), tự phản hồi và sửa lỗi (Self-Reflection).Quản lý trạng thái hội thoại (State Management), bộ nhớ ngắn hạn (Short-term memory qua lịch sử phiên) và bộ nhớ dài hạn (Long-term memory lưu trong DB/Redis).Model Context Protocol (MCP): Xây dựng MCP Server và MCP Client chuẩn hóa để kết nối AI Agent với cơ sở dữ liệu nội bộ, hệ thống file hoặc phần mềm bên thứ ba một cách an toàn.Điều phối đa tác tử (Multi-Agent Orchestration): Phân chia nhiệm vụ giữa các Agent chuyên biệt (ví dụ: Agent tra cứu dữ liệu, Agent phân tích nghiệp vụ, Agent kiểm duyệt đầu ra).Công cụ & Techstack: LangGraph (framework kiểm soát luồng Agent theo đồ thị trạng thái được ưa chuộng nhất trong sản phẩm thực tế), CrewAI hoặc AutoGen, MCP Python SDK (mcp), Redis.Gợi ý học tập & Thực hành:Học khóa miễn phí tại LangChain Academy (Introduction to LangGraph) và tài liệu chính thức tại modelcontextprotocol.io.Dự án Portfolio #2: Xây dựng một Autonomous Workflow Agent tích hợp chuẩn MCP có khả năng tự động tra cứu kho dữ liệu đơn hàng, đối chiếu tồn kho trong PostgreSQL, tạo báo cáo tổng hợp và gửi thông báo tự động qua API.5.Đánh giá (Evaluation), LLMOps Cơ bản & Đóng gói Sản phẩm:Tuần 15 - 18 | Mảnh ghép hoàn thiện tư duy Production.Điểm phân biệt một ứng viên AI Engineer thực thụ với người chỉ biết ghép API là khả năng đo lường chất lượng câu trả lời và đóng gói hệ thống sẵn sàng triển khai.Kiến thức cần học & luyện tập:LLM & RAG Evaluation: Xây dựng bộ dữ liệu kiểm thử (Golden Dataset) và đo lường tự động theo bộ chỉ số: độ trung thực với ngữ cảnh (Faithfulness/Groundedness), độ liên quan của câu trả lời (Answer Relevance) và chất lượng ngữ cảnh truy xuất (Context Precision/Recall).Observability & Tracing: Theo dõi từng bước gọi LLM/Agent, thống kê lượng token tiêu thụ, độ trễ và phát hiện lỗi trong chuỗi suy luận.Guardrails & AI Safety cơ bản: Kiểm soát đầu vào/đầu ra, chống Prompt Injection và lọc thông tin nhạy cảm.Containerization & CI/CD cơ bản: Viết Dockerfile, cấu hình docker-compose.yml chạy đồng bộ Backend FastAPI + PostgreSQL + Redis, và thiết lập GitHub Actions cơ bản."))
+client = FastAPI()
+
+class AIRequest(BaseModel):
+    content: str
+
+
+@client.post("/AI")
+def answer(req: AIRequest): 
+     return invoke_AI(req.content)

@@ -1,16 +1,11 @@
-system_instruction = "you are a personal assistant. Your job is to remember your master's information and do what he want. usually, you should end your response with 'master'."
-
-
 tools = [
     {
-        "type": "google_search",
-        "description": "Search any information that is not your master's information."
+        "type": "google_search"
     },
     {
         "type": "function",
         "name": "save_event",
         "description": "Save an upcoming event with its title, detailed description, and scheduled date/time into memory",
-        "defer_loading": True,
         "parameters": {
             "type": "object",
             "properties": {
