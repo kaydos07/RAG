@@ -1,8 +1,5 @@
 tools = [
     {
-        "type": "google_search"
-    },
-    {
         "type": "function",
         "name": "save_event",
         "description": "Save an upcoming event with its title, detailed description, and scheduled date/time into memory",

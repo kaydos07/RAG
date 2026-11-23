@@ -4,6 +4,7 @@ from app.utils.text_splitter import split_content
 from app.config.llm import embedding
 
 def save_event(title: str, description: str, date: datetime): 
+    """Save an upcoming event with its title, detailed description, and scheduled date/time into memory"""
     date_iso = date.isoformat()
     parent_chunk = split_content(description, 1500)
     for parent in parent_chunk:
@@ -40,5 +41,5 @@ def save_event(title: str, description: str, date: datetime):
             print(f"[save_event] Lỗi xử lý/lưu child chunks: {e}")
             supabase.table("parent_chunk_memory").delete().eq("id", parent_id).execute()
             return {"success": False, "error": f"Cannot save child chunks: {e}"}
-    return {"success": True}
+    return {"success": True, "message" : "event saved successfully to memory"}
     
