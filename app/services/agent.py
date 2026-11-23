@@ -1,6 +1,4 @@
 import json
-
-from app import prompts
 from app.config.settings import settings
 from app.config.llm import client
 from app.schemas.tools import tools
@@ -23,10 +21,11 @@ def invoke_AI(content: str, max_call: int = 5):
         ]
         if(not function_call):
             break
+        tool_response = []
         for call in function_call:
-            tool_response = []
+            print("function_call")
             if(call.type == "function_call"):
-                args = function.arguments
+                args = call.arguments
                 function = TOOL_MAPS.get(f'{call.name}') 
                 try:
                     result = function(**args)
@@ -40,11 +39,12 @@ def invoke_AI(content: str, max_call: int = 5):
                     "result": [
                         {
                             "type": "text", 
-                            "text": json.dump(result)
+                            "text": json.dumps(result)
                         }
                     ],
                 }
             )
+            print(tool_response)
             response = client.interactions.create(
                 model=model_name,
                 previous_interaction_id=response.id,
@@ -54,4 +54,4 @@ def invoke_AI(content: str, max_call: int = 5):
             )    
     return response.output_text
     
-invoke_AI("remind me on 25/11/2026 at 2pm that i will have a meeting")
+print(invoke_AI("remind me on 25/11/2026 at 2pm that i will have a meeting"))

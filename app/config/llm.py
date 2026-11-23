@@ -6,7 +6,7 @@ from .settings import settings
 
 client = genai.Client(api_key=settings.MODEL_API_KEY)   
 
-model_name = settings.MODEL_NAME
+model_name = settings.EMBEDDING_MODEL_NAME
 
 
 
