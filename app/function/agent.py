@@ -2,7 +2,11 @@ import os
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+from langchain_protocol import Checkpoint
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+from app.schema import tools, system_instruction
+
 load_dotenv()
 
 
@@ -32,5 +36,7 @@ def embedding(content: str, task_type: str):
 
 response = client.interactions.create(
     model=os.getenv('MODEL_NAME'),
-    input="what is milk"
+    input="what is milk",
+    tools=tools,
+    system_instruction=system_instruction
 )
