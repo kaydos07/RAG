@@ -10,4 +10,4 @@ class AIRequest(BaseModel):
 
 @client.post("/AI")
 def answer(req: AIRequest): 
-     return invoke_AI(req.content)
+     return {"message" : invoke_AI(req.content)}

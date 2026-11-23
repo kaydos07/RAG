@@ -5,3 +5,5 @@ venv/
 .venv/
 chroma_db/
 faiss_index/
+credentials.json
+token.json
