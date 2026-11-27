@@ -1,18 +1,21 @@
 from fastapi import FastAPI
-from schemas.chats_schema import ChatRequest
+from app.schemas.chats_schema import ChatRequest
 from .services.agent import invoke_AI
-from .config import mcp_manager
+from .config.mcp_manager import mcp_manager
 from contextlib import asynccontextmanager
 
 @asynccontextmanager
-def lifespan():
-    mcp_manager.connect()
-    yield
-    mcp_manager.disconnect()
+async def lifespan(app: FastAPI):
+    try:
+        await mcp_manager.connect()
+        print(f"[MCP] Loaded tools: {mcp_manager.tool_names}")
+        yield
+    finally:
+        await mcp_manager.disconnect()
 
 client = FastAPI(lifespan=lifespan)
 
 
 @client.post("/AI")
-def answer(req: ChatRequest): 
-     return {"message" : invoke_AI(req.content)}
+async def answer(req: ChatRequest): 
+     return {"message" : await invoke_AI(req.content)}

@@ -1,3 +1,4 @@
+from codecs import ascii_decode
 import json
 from app.config.settings import settings
 from app.config.llm import client
@@ -10,10 +11,12 @@ from app.prompts.system import system_instruction
 model_name = settings.MODEL_NAME
 
 async def invoke_AI(content: str, max_call: int = 5):
+    external_tools = tools + mcp_manager.mcp_tools
+    
     response = client.interactions.create(
                 model=model_name,
                 input=content,
-                tools=tools,
+                tools=external_tools,
                 system_instruction=system_instruction
             )
     for i in range(max_call):  
@@ -27,17 +30,18 @@ async def invoke_AI(content: str, max_call: int = 5):
         for call in function_call:
             args = call.arguments
             if call.name in TOOL_MAPS:
+                print(f"funtion tool called: {call.name}")
                 function = TOOL_MAPS.get(f'{call.name}') 
                 try:
-                    result = function(**args)
+                    result = json.dumps(function(**args), ensure_ascii=False)
                 except Exception as e:
-                    result = {"success": False, "error": str(e)}
+                    result = json.dumps({"success": False, "error": str(e)})
             if call.name in mcp_manager.tool_names:
-                function = TOOL_MAPS.get(f'{call.name}') 
+                print(f"mcp tool called: {call.name}")
                 try:
-                    result = function(**args)
+                    result = await mcp_manager.execute_tool(call.name, args)
                 except Exception as e:
-                    result = {"success": False, "error": str(e)}
+                    result = json.dumps({"success": False, "error": str(e)})
             tool_response.append(
                 {
                     "type": "function_result",
@@ -46,7 +50,7 @@ async def invoke_AI(content: str, max_call: int = 5):
                     "result": [
                         {
                             "type": "text", 
-                            "text": json.dumps(result)
+                            "text": result
                         }
                     ],
                 }
@@ -55,7 +59,7 @@ async def invoke_AI(content: str, max_call: int = 5):
                 model=model_name,
                 previous_interaction_id=response.id,
                 input=tool_response,
-                tools=tools,
+                tools=external_tools,
                 system_instruction=system_instruction
             )    
     return response.output_text

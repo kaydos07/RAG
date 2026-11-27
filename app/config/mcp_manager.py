@@ -37,10 +37,10 @@ class MCPManager:
                 "type": "function",
                 "name": tool.name,
                 "description": tool.description or "",
-                "parameters": tool.inputSchema,
+                "parameters": tool.input_schema,
             })
 
-    async def call_tool(self, name: str, arguments: dict) -> str:
+    async def execute_tool(self, name: str, arguments: dict) -> str:
         if not self.session:
             return '{"success": false, "error": "MCP session is not connected"}'
 
