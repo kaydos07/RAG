@@ -9,7 +9,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ["https://www.googleapis.com/auth/calendar.events"]
+SCOPES = ["https://www.googleapis.com/auth/calendar"]
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 CREDENTIALS_PATH = BASE_DIR / "credentials.json"
@@ -39,3 +39,5 @@ def create_credential():
 def get_google_service(api_name: str, version: str):
   cres = create_credential()
   return build(api_name, version, credentials=cres)
+
+get_google_service("calendar", "v3")

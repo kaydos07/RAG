@@ -39,10 +39,10 @@ async def invoke_AI(content: str, max_call: int = 5):
                 print(f"mcp tool called: {call.name}")
                 try:
                     result = await mcp_manager.execute_tool(call.name, args)
-                    print(f"mcp tool result: {result}")
-                    print(f"mcp tool args: {args}")
                 except Exception as e:
                     result = json.dumps({"success": False, "error": str(e)})
+                print(f"mcp args: {args}")
+                print(f"mcp response: {result}")
             tool_response.append(
                 {
                     "type": "function_result",

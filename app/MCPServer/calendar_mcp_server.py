@@ -152,7 +152,7 @@ async def update_event(
         return {"success": False, "error": str(e)}
 
 @mcp.tool()
-async def get_calendar(maxResults: Annotated[int, Field(description="Maximum end time to query an event in RFC3339 timestamp format")] = 5):
+async def get_calendar(maxResults: Annotated[int, Field(description="Maximum calendar result")] = 5):
     """
         Get User's all calendar list. 
         Use this to get Calendar id for question demand global event and holiday.
@@ -160,16 +160,16 @@ async def get_calendar(maxResults: Annotated[int, Field(description="Maximum end
     """
     
     param = {
-        "MaxResults":  maxResults 
+        "maxResults":  maxResults 
     }
     try:
         service = get_google_service("calendar", "v3")
-        function = service.calendar().list(**param).execute()
+        function = service.calendarList().list(**param).execute()
         response =  [ {
             "Description": s.get("description"),
             "CalendarId": s.get("id"),
             "Summary": s.get("summary")
-            } for s in function.get("items")]
+            } for s in function.get("items", [])]
         return response
     except HttpError as e:
         print(f"[calendar_mcp] HttpError in get_calendar: {e}", file=sys.stderr)
