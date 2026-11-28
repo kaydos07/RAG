@@ -1,4 +1,3 @@
-import datetime
 import os.path
 from pathlib import Path
 from venv import create
@@ -37,8 +36,6 @@ def create_credential():
     
   return creds
 
-def get_google_service(api_name: str):
+def get_google_service(api_name: str, version: str):
   cres = create_credential()
-  return build(api_name, "v3", credentials=cres)
-
-get_google_service("calendar")
+  return build(api_name, version, credentials=cres)

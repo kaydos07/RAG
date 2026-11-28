@@ -1,4 +1,3 @@
-from codecs import ascii_decode
 import json
 from app.config.settings import settings
 from app.config.llm import client
@@ -40,6 +39,8 @@ async def invoke_AI(content: str, max_call: int = 5):
                 print(f"mcp tool called: {call.name}")
                 try:
                     result = await mcp_manager.execute_tool(call.name, args)
+                    print(f"mcp tool result: {result}")
+                    print(f"mcp tool args: {args}")
                 except Exception as e:
                     result = json.dumps({"success": False, "error": str(e)})
             tool_response.append(

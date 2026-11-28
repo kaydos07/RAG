@@ -1,3 +1,6 @@
+import calendar
+
+from exceptiongroup import catch
 from mcp.server.mcpserver import MCPServer
 import sys
 from googleapiclient.errors import HttpError
@@ -21,8 +24,9 @@ def formater(calendar: dict):
 @mcp.tool()
 async def get_event(
     timeMin: Annotated[str, Field(description="minimum end time to query an event in RFC3339 timestamp format, default value today if user does not request time")], 
+    calendarId: Annotated[str, Field(description="minimum end time to query an event in RFC3339 timestamp format, default value today if user does not request time")] = "primary",
     timeMax: Annotated[str, Field(description="Maximum end time to query an event in RFC3339 timestamp format")] = None,  
-    maxResults: Annotated[int, Field(description="Maximum end time to query an event in RFC3339 timestamp format")] = 5
+    maxResults: Annotated[int, Field(description="Maximum result")] = 5
 ): 
     """get upcoming user's event list
         Args:
@@ -33,15 +37,19 @@ async def get_event(
     param = {
         "timeMax": timeMax,
         "timeMin": timeMin,
-        "calendarId": "primary",
+        "calendarId": calendarId,
         "maxResults": maxResults,
         "singleEvents": True
     }
     try:
-        service = get_google_service("calendar")
+        service = get_google_service("calendar", "v3")
         res = service.events().list(**param).execute()
-        event = [formater(s) for s in res.get("items")]
-        return event
+        response = res.get("items")
+        if len(response) == 0:
+            return "There is no event on this specification date"
+        else:
+            event = [formater(s) for s in res.get("items")]
+            return event
     except HttpError as e:
         print(f"[calendar_mcp] HttpError in list_events: {e}", file=sys.stderr)
         return {"success": False, "error": str(e)}
@@ -84,7 +92,7 @@ async def insert_event(
         }
     }
     try:
-        service = get_google_service("calendar")
+        service = get_google_service("calendar", "v3")
         res = service.events().insert(**param).execute()
         event = [formater(s) for s in res.get("items")]
         return event
@@ -133,7 +141,7 @@ async def update_event(
         }
     }
     try:
-        service = get_google_service("calendar")
+        service = get_google_service("calendar", "v3")
         res = service.events().update(**param).execute()
         return formater(res)
     except HttpError as e:
@@ -143,5 +151,36 @@ async def update_event(
         print(f"[calendar_mcp] Error in update_event: {e}", file=sys.stderr)
         return {"success": False, "error": str(e)}
 
+@mcp.tool()
+async def get_calendar(maxResults: Annotated[int, Field(description="Maximum end time to query an event in RFC3339 timestamp format")] = 5):
+    """
+        Get User's all calendar list. 
+        Use this to get Calendar id for question demand global event and holiday.
+        for example: noel, Viet nam national day holiday 
+    """
+    
+    param = {
+        "MaxResults":  maxResults 
+    }
+    try:
+        service = get_google_service("calendar", "v3")
+        function = service.calendar().list(**param).execute()
+        response =  [ {
+            "Description": s.get("description"),
+            "CalendarId": s.get("id"),
+            "Summary": s.get("summary")
+            } for s in function.get("items")]
+        return response
+    except HttpError as e:
+        print(f"[calendar_mcp] HttpError in get_calendar: {e}", file=sys.stderr)
+        return {"success": False, "error": str(e)}
+    except Exception as e:
+        print(f"[calendar_mcp] Error in get_calendar: {e}", file=sys.stderr)
+        return {"success": False, "error": str(e)} 
+
+
 if __name__ == "__main__":
     mcp.run(transport="stdio")
+    
+    
+    
