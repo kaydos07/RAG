@@ -14,6 +14,7 @@ def formater(calendar: dict):
         "description": calendar.get("summary"),
         "startTime": calendar.get("start"), 
         "endTime": calendar.get("end"), 
+        "location": calendar.get("location")
     }
     return response
 
@@ -53,8 +54,8 @@ async def get_event(
 async def insert_event(
     summary: Annotated[str, Field(description="Short title of the event")],
     description: Annotated[str, Field(description="Optional detailed note for the event.")],
-    startTime: Annotated[str, Field(description="Start date/time in RFC3339 timestamp format with timezone (e.g., '2026-11-25T14:00:00+07:00').")],
-    endTime: Annotated[str, Field(description="End date/time in RFC3339 timestamp format with timezone (e.g., '2026-11-25T14:00:00+07:00'). Default value should be startTime but an hours later.")],
+    startTime: Annotated[str, Field(description="Start date/time in RFC3339 timestamp format with timezone (e.g., '2026-11-25T14:00:00+07:00').")] | None,
+    endTime: Annotated[str, Field(description="End date/time in RFC3339 timestamp format with timezone (e.g., '2026-11-25T14:00:00+07:00'). Default value should be startTime but an hours later.")] | None,
     location: Annotated[str, Field(description="Place that occured the event")] | None
 ):
     """Create a new event on the user's primary Google Calendar.

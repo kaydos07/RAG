@@ -26,7 +26,7 @@ async def invoke_AI(content: str, max_call: int = 5):
         if(not function_call):
             break
         tool_response = []
-        # chia function_call thành 2 hướng là local function và mcp function
+        # apply function call to exteranl tool and mcp tool
         for call in function_call:
             args = call.arguments
             if call.name in TOOL_MAPS:
