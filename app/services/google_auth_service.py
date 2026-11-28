@@ -39,5 +39,3 @@ def create_credential():
 def get_google_service(api_name: str, version: str):
   cres = create_credential()
   return build(api_name, version, credentials=cres)
-
-get_google_service("calendar", "v3")
